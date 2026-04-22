@@ -1,0 +1,6 @@
+.env.local
+*.mjs.bak
+seed.mjs
+fix-passwords.mjs
+node_modules/
+.next/
