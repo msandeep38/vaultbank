@@ -107,13 +107,21 @@
   });
 
   // Demo payload definitions
+  // SQLi query returns 7 columns: id, description, amount, type, date, username, full_name
   const PAYLOADS = [
-    { label: 'Normal search',      value: 'salary',                                          desc: 'Returns real DB rows' },
-    { label: 'XSS — script tag',   value: "<script>alert('XSS')<\/script>",                  desc: 'Executes JS via script tag injection' },
-    { label: 'XSS — img onerror',  value: "<img src=x onerror=alert('XSS')>",                desc: 'Executes JS via event handler injection' },
-    { label: 'XSS — SVG',          value: "<svg onload=alert('XSS')>",                        desc: 'Executes JS via SVG onload' },
-    { label: 'SQLi attempt',       value: "' OR 1=1--",                                       desc: 'Would bypass auth (search uses safe parameterized query)' },
-    { label: 'SQLi UNION',         value: "' UNION SELECT * FROM users--",                    desc: 'Attempts to extract users table' },
+    { label: 'Normal search',      value: 'salary',
+      desc: 'Returns matching transactions' },
+    { label: 'XSS — script tag',   value: "<script>alert('XSS')<\/script>",
+      desc: 'Executes JS via injected script tag' },
+    { label: 'XSS — img onerror',  value: "<img src=x onerror=alert('XSS')>",
+      desc: 'Executes JS via onerror event handler' },
+    { label: 'XSS — SVG',          value: "<svg onload=alert('XSS')>",
+      desc: 'Executes JS via SVG onload' },
+    { label: "SQLi — dump all",    value: "' OR 1=1--",
+      desc: 'Bypasses LIKE filter — returns every transaction in the DB' },
+    { label: 'SQLi — UNION dump',
+      value: "' UNION SELECT id,'🚨 '||username||':'||password,balance,'STOLEN','2024-01-01',email,full_name FROM users--",
+      desc: 'UNION injects users table — dumps credentials into results' },
   ];
 
   const payloadContainer = document.getElementById('payload-btns');
@@ -138,24 +146,21 @@
 
   // ┌──────────────────────────────────────────────────────────────────────────
   // │ VULNERABILITY 1 — XSS
-  // │ execScripts() manually creates and appends <script> elements so that
-  // │ <script>alert('XSS')</script> actually executes even though browsers
-  // │ block script tags created via innerHTML. This replicates server-side
-  // │ rendering where the attacker's input is echoed raw into the HTML.
+  // │ execScripts() uses eval() to run any <script> content in the payload.
+  // │ eval() is synchronous and bypasses browsers' block on innerHTML scripts.
+  // │ Event-handler payloads (<img onerror>, <svg onload>) fire automatically
+  // │ once injected into headingEl.innerHTML — no extra step needed for those.
   // └──────────────────────────────────────────────────────────────────────────
-  function execScripts(html) {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    tmp.querySelectorAll('script').forEach(orig => {
-      const s = document.createElement('script');
-      if (orig.src) {
-        s.src = orig.src;
-      } else {
-        s.text = orig.textContent || orig.innerText || '';
+  function execScripts(payload) {
+    // Extract every <script>…</script> block and eval it directly
+    const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+    let m;
+    while ((m = re.exec(payload)) !== null) {
+      const code = m[1].trim();
+      if (code) {
+        try { eval(code); } catch (e) { /* swallow errors in attacker payloads */ }
       }
-      document.body.appendChild(s);
-      s.remove();
-    });
+    }
   }
 
   async function doSearch(q) {

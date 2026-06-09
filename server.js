@@ -68,6 +68,16 @@ function dbGetRaw(sql) {
   return row;
 }
 
+// ⚠️  VULNERABLE multi-row query — no params, runs raw concatenated SQL
+// Used only for the SQL injection demo on /api/search
+function dbAllRaw(sql) {
+  const stmt = db.prepare(sql);
+  const rows = [];
+  while (stmt.step()) rows.push(stmt.getAsObject());
+  stmt.free();
+  return rows;
+}
+
 // ─── Database Seed ────────────────────────────────────────────────────────────
 
 function setupDatabase() {
@@ -181,28 +191,31 @@ app.get('/api/dashboard', (req, res) => {
 });
 
 // ┌─────────────────────────────────────────────────────────────────────────────
-// │ VULNERABILITY 1 — XSS (frontend search.html injects raw query via innerHTML)
+// │ VULNERABILITY 1 — XSS  (frontend search.html injects raw query via innerHTML)
+// │ VULNERABILITY 2b — SQL INJECTION on search (same string-concatenation flaw)
+// │   ' OR 1=1--  → returns ALL transactions
+// │   ' UNION SELECT … FROM users--  → dumps credentials into results
 // └─────────────────────────────────────────────────────────────────────────────
 app.get('/api/search', (req, res) => {
   const q = (req.query.q ?? '').toString();
 
   try {
+    // ⚠️  INTENTIONALLY VULNERABLE — string concatenation, NOT parameterized
     // Real DB work so flooding causes measurable slowdown (DoS demo)
-    const results = dbAll(
-      `SELECT t.id, t.description, t.amount, t.type, t.date,
-              u.username, u.full_name
+    const sql =
+      `SELECT t.id, t.description, t.amount, t.type, t.date, u.username, u.full_name
        FROM   transactions t
        JOIN   users        u ON u.id = t.user_id
-       WHERE  t.description LIKE ?
+       WHERE  t.description LIKE '%` + q + `%'
        ORDER  BY t.date DESC
-       LIMIT  50`,
-      [`%${q}%`]
-    );
+       LIMIT  50`;
+
+    const results = dbAllRaw(sql);
 
     // ⚠️  query echoed back raw — search.html must NOT sanitize it for XSS to fire
     return res.json({ results, query: q });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message, query: q });
   }
 });
 
