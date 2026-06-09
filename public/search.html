@@ -15,28 +15,69 @@
     .fade-in { animation:fadeIn 0.5s ease forwards; }
     @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
     .pulse-dot { animation:pulseDot 1.4s infinite; display:inline-block; }
+
+    /* Attack button base style */
+    .attack-btn {
+      font-family: monospace;
+      font-size: 0.78rem;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid #7c2d12;
+      background: rgba(124,45,18,0.15);
+      color: #fb923c;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .attack-btn:hover {
+      background: rgba(194,65,12,0.3);
+      border-color: #ea580c;
+      color: #fed7aa;
+    }
+
+    /* Nav link active */
+    .nav-link { padding:8px 16px; border-radius:8px; font-size:0.875rem; font-weight:500; color:#9ca3af; transition:all 0.2s; }
+    .nav-link:hover { color:white; background:rgba(255,255,255,0.05); }
+    .nav-link.active { background:#2563eb; color:white; }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
+<!-- ═══════════════════════════════════════════════════════════
+     NAVBAR — hardcoded HTML, no JS required for visibility
+════════════════════════════════════════════════════════════ -->
 <nav style="position:sticky;top:0;z-index:50;border-bottom:1px solid #1a2744;background:rgba(13,21,38,0.95);backdrop-filter:blur(12px);">
   <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+
+    <!-- Logo -->
     <a href="/" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:white;">
-      <span style="font-size:1.5rem;">🏦</span><span style="color:#60a5fa;">Vault</span>Bank
+      <span style="font-size:1.5rem;">🏦</span>
+      <span style="color:#60a5fa;">Vault</span>Bank
     </a>
-    <div id="nav-links" style="display:flex;align-items:center;gap:4px;"></div>
+
+    <!-- Nav links -->
+    <div style="display:flex;align-items:center;gap:4px;">
+      <a href="/"          class="nav-link">Home</a>
+      <a href="/login"     class="nav-link">Login</a>
+      <a href="/dashboard" class="nav-link">Transactions</a>
+      <a href="/search"    class="nav-link active">Search</a>
+    </div>
+
+    <!-- CyberShield indicator -->
     <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#6b7280;">
       <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
       Protected by CyberShield
     </div>
+
   </div>
 </nav>
 
-<!-- PAGE -->
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE CONTENT
+════════════════════════════════════════════════════════════ -->
 <main style="max-width:1152px;margin:0 auto;padding:48px 24px;" class="fade-in">
 
-  <div style="margin-bottom:40px;">
+  <div style="margin-bottom:32px;">
     <h1 style="font-size:1.875rem;font-weight:700;color:white;margin:0 0 8px;">Transaction Search</h1>
     <p style="color:#6b7280;font-size:0.875rem;margin:0;">
       Search across all customer transactions. CyberShield scans every query for malicious payloads.
@@ -55,14 +96,43 @@
     </button>
   </form>
 
-  <!-- Attack demo buttons -->
-  <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;padding:20px;margin-bottom:32px;">
-    <p style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 12px;">
-      🎯 Demo Attack Payloads — click to try
+  <!-- ═══════════════════════════════════════════════════════
+       DEMO ATTACK PAYLOADS — hardcoded HTML buttons
+       Labels use HTML entities so the raw payload text is
+       visible without any risk of the browser executing it.
+  ══════════════════════════════════════════════════════════ -->
+  <div style="background:#0d1526;border:1px solid #7c2d12;border-radius:12px;padding:20px;margin-bottom:32px;">
+    <p style="font-size:0.7rem;color:#f97316;text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin:0 0 14px;">
+      ⚠️ Demo Attack Payloads — click to inject
     </p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="payload-btns"></div>
-    <p style="font-size:0.75rem;color:#374151;margin:12px 0 0;">
-      ⚡ Attack payloads are intercepted by CyberShield <em>before</em> reaching this server — if running through the proxy.
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+
+      <!-- Button 1: XSS script tag -->
+      <button class="attack-btn" data-idx="0">
+        &lt;script&gt;alert('XSS')&lt;/script&gt;
+      </button>
+
+      <!-- Button 2: SQL Injection -->
+      <button class="attack-btn" data-idx="1">
+        ' OR '1'='1
+      </button>
+
+      <!-- Button 3: XSS img onerror -->
+      <button class="attack-btn" data-idx="2">
+        &lt;img src=x onerror=alert('hacked')&gt;
+      </button>
+
+      <!-- Button 4: XSS SVG onload -->
+      <button class="attack-btn" data-idx="3">
+        &lt;svg onload=alert(1)&gt;
+      </button>
+
+    </div>
+
+    <p style="font-size:0.75rem;color:#78350f;margin:12px 0 0;">
+      Without CyberShield, each payload executes directly in the browser.
+      With CyberShield active, these requests are blocked before reaching the server.
     </p>
   </div>
 
@@ -83,182 +153,139 @@
 </footer>
 
 <script>
-  // Build navbar
-  const NAV = [
-    { href:'/', label:'Home' },
-    { href:'/login', label:'Login' },
-    { href:'/dashboard', label:'Dashboard' },
-    { href:'/transfer', label:'Transfer' },
-    { href:'/search', label:'Transactions' },
-  ];
-  const navEl = document.getElementById('nav-links');
-  NAV.forEach(l => {
-    const a = document.createElement('a');
-    a.href = l.href;
-    a.textContent = l.label;
-    const active = window.location.pathname === l.href;
-    a.style.cssText = `padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:all 0.2s;
-      ${active ? 'background:#2563eb;color:white;' : 'color:#9ca3af;'}`;
-    if (!active) {
-      a.onmouseover = () => { a.style.color='white'; a.style.background='rgba(255,255,255,0.05)'; };
-      a.onmouseout  = () => { a.style.color='#9ca3af'; a.style.background=''; };
-    }
-    navEl.appendChild(a);
+/* =============================================================
+   PAYLOAD LOOKUP TABLE — indexed by data-idx on each button.
+   Stored here as JS values; the HTML buttons use entities so
+   none of these strings appear raw in the HTML source.
+   The closing script tag inside string 0 is escaped as <\/
+   so the HTML parser never sees </script and closes this block.
+============================================================= */
+var ATTACK_PAYLOADS = [
+  "<script>alert('XSS')<\/script>",
+  "' OR '1'='1",
+  "<img src=x onerror=alert('hacked')>",
+  "<svg onload=alert(1)>"
+];
+
+/* Wire up each hardcoded attack button */
+document.querySelectorAll('.attack-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var payload = ATTACK_PAYLOADS[parseInt(this.dataset.idx, 10)];
+    document.getElementById('search-input').value = payload;
+    doSearch(payload);
   });
+});
 
-  // Demo payload definitions
-  // SQLi query returns 7 columns: id, description, amount, type, date, username, full_name
-  const PAYLOADS = [
-    { label: 'Normal search',      value: 'salary',
-      desc: 'Returns matching transactions' },
-    { label: 'XSS — script tag',   value: "<script>alert('XSS')<\/script>",
-      desc: 'Executes JS via injected script tag' },
-    { label: 'XSS — img onerror',  value: "<img src=x onerror=alert('XSS')>",
-      desc: 'Executes JS via onerror event handler' },
-    { label: 'XSS — SVG',          value: "<svg onload=alert('XSS')>",
-      desc: 'Executes JS via SVG onload' },
-    { label: "SQLi — dump all",    value: "' OR 1=1--",
-      desc: 'Bypasses LIKE filter — returns every transaction in the DB' },
-    { label: 'SQLi — UNION dump',
-      value: "' UNION SELECT id,'🚨 '||username||':'||password,balance,'STOLEN','2024-01-01',email,full_name FROM users--",
-      desc: 'UNION injects users table — dumps credentials into results' },
-  ];
+/* ─── Utility ─────────────────────────────────────────────── */
+function fmtINR(n) {
+  return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+}
 
-  const payloadContainer = document.getElementById('payload-btns');
-  PAYLOADS.forEach(p => {
-    const btn = document.createElement('button');
-    btn.textContent = p.label;
-    btn.title = p.desc;
-    btn.style.cssText = `font-size:0.75rem;padding:6px 12px;border-radius:8px;border:1px solid #1a2744;
-      background:transparent;color:#9ca3af;cursor:pointer;transition:all 0.2s;`;
-    btn.onmouseover = () => { btn.style.borderColor='#3b82f6'; btn.style.color='white'; };
-    btn.onmouseout  = () => { btn.style.borderColor='#1a2744'; btn.style.color='#9ca3af'; };
-    btn.addEventListener('click', () => {
-      document.getElementById('search-input').value = p.value;
-      doSearch(p.value);
-    });
-    payloadContainer.appendChild(btn);
-  });
-
-  function fmtINR(n) {
-    return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-  }
-
-  // ┌──────────────────────────────────────────────────────────────────────────
-  // │ VULNERABILITY 1 — XSS
-  // │ execScripts() uses eval() to run any <script> content in the payload.
-  // │ eval() is synchronous and bypasses browsers' block on innerHTML scripts.
-  // │ Event-handler payloads (<img onerror>, <svg onload>) fire automatically
-  // │ once injected into headingEl.innerHTML — no extra step needed for those.
-  // └──────────────────────────────────────────────────────────────────────────
-  function execScripts(payload) {
-    // Extract every <script>…</script> block and eval it directly
-    const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
-    let m;
-    while ((m = re.exec(payload)) !== null) {
-      const code = m[1].trim();
-      if (code) {
-        try { eval(code); } catch (e) { /* swallow errors in attacker payloads */ }
-      }
+/* =============================================================
+   VULNERABILITY 1 — XSS
+   execScripts uses eval() to fire any <script> content.
+   Event-handler payloads (<img onerror>, <svg onload>) fire
+   automatically once injected into headingEl.innerHTML.
+============================================================= */
+function execScripts(payload) {
+  var re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+  var m;
+  while ((m = re.exec(payload)) !== null) {
+    var code = m[1].trim();
+    if (code) {
+      try { eval(code); } catch(e) { /* swallow payload errors */ }
     }
   }
+}
 
-  async function doSearch(q) {
-    if (!q.trim()) return;
+/* ─── Main search function ────────────────────────────────── */
+async function doSearch(q) {
+  var headingEl  = document.getElementById('results-heading');
+  var errBox     = document.getElementById('error-box');
+  var resultsEl  = document.getElementById('results-container');
+  var btn        = document.getElementById('search-btn');
 
-    const headingEl   = document.getElementById('results-heading');
-    const errBox      = document.getElementById('error-box');
-    const resultsEl   = document.getElementById('results-container');
-    const btn         = document.getElementById('search-btn');
+  errBox.style.display = 'none';
+  btn.textContent = 'Searching…';
+  btn.disabled = true;
 
-    errBox.style.display = 'none';
-    btn.textContent = 'Searching…';
-    btn.disabled = true;
+  try {
+    var resp = await fetch('/api/search?q=' + encodeURIComponent(q || ''));
+    var data = await resp.json();
 
-    try {
-      const resp = await fetch('/api/search?q=' + encodeURIComponent(q));
-      const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Search failed');
 
-      if (!resp.ok) throw new Error(data.error || 'Search failed');
+    var results = data.results || [];
 
-      const results = data.results || [];
+    /* ⚠️  INTENTIONALLY VULNERABLE — raw user input injected via innerHTML.
+       This causes <img onerror> and <svg onload> payloads to execute.
+       execScripts() handles the <script> case via eval(). */
+    headingEl.innerHTML =
+      results.length + ' result' + (results.length !== 1 ? 's' : '') +
+      ' for: <span style="color:white;">' + q + '</span>';
 
-      // ⚠️  INTENTIONALLY VULNERABLE: raw user input injected into DOM via innerHTML
-      // This makes <script>alert()</script> and <img onerror=...> payloads execute.
-      headingEl.innerHTML =
-        results.length + ' result' + (results.length !== 1 ? 's' : '') +
-        ' for: <span style="color:white;">' + q + '</span>';
+    execScripts(q);
 
-      // Execute any <script> tags present in the injected payload
-      execScripts(q);
+    if (results.length === 0) {
+      resultsEl.innerHTML =
+        '<div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;' +
+        'padding:40px;text-align:center;color:#4b5563;">' +
+        'No transactions found matching your query.</div>';
+    } else {
+      var rows = results.map(function(t, i) {
+        var isCredit = t.type === 'credit';
+        var bg = i % 2 !== 0 ? 'background:rgba(255,255,255,0.01);' : '';
+        var dateStr = '';
+        try { dateStr = new Date(t.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); }
+        catch(e) { dateStr = t.date || ''; }
+        return '<tr style="border-bottom:1px solid #1a2744;' + bg + '">' +
+          '<td style="padding:14px 20px;color:#6b7280;font-family:monospace;font-size:0.8rem;">#' + t.id + '</td>' +
+          '<td style="padding:14px 20px;color:#e2e8f0;">' + t.description + '</td>' +
+          '<td style="padding:14px 20px;color:#60a5fa;">' + (t.username || '') + '</td>' +
+          '<td style="padding:14px 20px;"><span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;' +
+            (isCredit ? 'background:rgba(21,128,61,0.3);color:#4ade80;' : 'background:rgba(153,27,27,0.3);color:#f87171;') + '">' +
+            t.type + '</span></td>' +
+          '<td style="padding:14px 20px;text-align:right;font-family:monospace;font-weight:600;' +
+            (isCredit ? 'color:#4ade80;' : 'color:#f87171;') + '">' +
+            (isCredit ? '+' : '-') + fmtINR(t.amount) + '</td>' +
+          '<td style="padding:14px 20px;color:#6b7280;">' + dateStr + '</td>' +
+          '</tr>';
+      }).join('');
 
-      // Render results table
-      if (results.length === 0) {
-        resultsEl.innerHTML = `
-          <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;padding:40px;text-align:center;color:#4b5563;">
-            No transactions found matching your query.
-          </div>`;
-      } else {
-        const rows = results.map((t, i) => {
-          const isCredit = t.type === 'credit';
-          const bg = i % 2 !== 0 ? 'background:rgba(255,255,255,0.01);' : '';
-          return `<tr style="border-bottom:1px solid #1a2744;${bg}">
-            <td style="padding:14px 20px;color:#6b7280;font-family:monospace;font-size:0.8rem;">#${t.id}</td>
-            <td style="padding:14px 20px;color:#e2e8f0;">${t.description}</td>
-            <td style="padding:14px 20px;color:#60a5fa;">${t.username}</td>
-            <td style="padding:14px 20px;">
-              <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;
-                ${isCredit ? 'background:rgba(21,128,61,0.3);color:#4ade80;' : 'background:rgba(153,27,27,0.3);color:#f87171;'}">
-                ${t.type}
-              </span>
-            </td>
-            <td style="padding:14px 20px;text-align:right;font-family:monospace;font-weight:600;
-              ${isCredit ? 'color:#4ade80;' : 'color:#f87171;'}">
-              ${isCredit ? '+' : '-'}${fmtINR(t.amount)}
-            </td>
-            <td style="padding:14px 20px;color:#6b7280;">
-              ${new Date(t.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
-            </td>
-          </tr>`;
-        }).join('');
-
-        resultsEl.innerHTML = `
-          <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;overflow:hidden;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
-              <thead>
-                <tr style="border-bottom:1px solid #1a2744;background:#060c1a;">
-                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">ID</th>
-                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Description</th>
-                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">User</th>
-                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Type</th>
-                  <th style="text-align:right;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Amount</th>
-                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Date</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>`;
-      }
-
-    } catch (err) {
-      errBox.textContent = '⚠️ ' + err.message;
-      errBox.style.display = 'block';
-      headingEl.innerHTML = '';
-      resultsEl.innerHTML = '';
+      resultsEl.innerHTML =
+        '<div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;overflow:hidden;">' +
+        '<table style="width:100%;border-collapse:collapse;font-size:0.875rem;">' +
+        '<thead><tr style="border-bottom:1px solid #1a2744;background:#060c1a;">' +
+        '<th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">ID</th>' +
+        '<th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Description</th>' +
+        '<th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">User</th>' +
+        '<th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Type</th>' +
+        '<th style="text-align:right;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Amount</th>' +
+        '<th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Date</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+        '</table></div>';
     }
 
-    btn.textContent = '🔍 Search';
-    btn.disabled = false;
+  } catch(err) {
+    errBox.textContent = '⚠️ ' + err.message;
+    errBox.style.display = 'block';
+    headingEl.innerHTML = '';
+    resultsEl.innerHTML = '';
   }
 
-  // Form submit handler
-  document.getElementById('search-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    doSearch(document.getElementById('search-input').value);
-  });
+  btn.textContent = '🔍 Search';
+  btn.disabled = false;
+}
 
-  // Load all transactions on page open
-  doSearch('');
+/* Form submit */
+document.getElementById('search-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  doSearch(document.getElementById('search-input').value);
+});
+
+/* Load all transactions on page open */
+doSearch('');
 </script>
 </body>
 </html>

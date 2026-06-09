@@ -15,6 +15,9 @@
     .fade-in { animation:fadeIn 0.5s ease forwards; }
     @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
     .pulse-dot { animation:pulseDot 1.4s infinite; display:inline-block; }
+    .nav-link { padding:8px 16px; border-radius:8px; font-size:0.875rem; font-weight:500; color:#9ca3af; transition:all 0.2s; }
+    .nav-link:hover { color:white; background:rgba(255,255,255,0.05); }
+    .nav-link.active { background:#2563eb; color:white; }
   </style>
 </head>
 <body>
@@ -25,7 +28,12 @@
     <a href="/" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:white;">
       <span style="font-size:1.5rem;">🏦</span><span style="color:#60a5fa;">Vault</span>Bank
     </a>
-    <div id="nav-links" style="display:flex;align-items:center;gap:4px;"></div>
+    <div style="display:flex;align-items:center;gap:4px;">
+        <a href="/"          class="nav-link">Home</a>
+        <a href="/login"     class="nav-link active">Login</a>
+        <a href="/dashboard" class="nav-link">Transactions</a>
+        <a href="/search"    class="nav-link">Search</a>
+      </div>
     <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#6b7280;">
       <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
       Protected by CyberShield
@@ -101,29 +109,6 @@
 </footer>
 
 <script>
-  // Build navbar
-  const NAV = [
-    { href:'/', label:'Home' },
-    { href:'/login', label:'Login' },
-    { href:'/dashboard', label:'Dashboard' },
-    { href:'/transfer', label:'Transfer' },
-    { href:'/search', label:'Transactions' },
-  ];
-  const navEl = document.getElementById('nav-links');
-  NAV.forEach(l => {
-    const a = document.createElement('a');
-    a.href = l.href;
-    a.textContent = l.label;
-    const active = window.location.pathname === l.href;
-    a.style.cssText = `padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:all 0.2s;
-      ${active ? 'background:#2563eb;color:white;' : 'color:#9ca3af;'}`;
-    if (!active) {
-      a.onmouseover = () => { a.style.color='white'; a.style.background='rgba(255,255,255,0.05)'; };
-      a.onmouseout  = () => { a.style.color='#9ca3af'; a.style.background=''; };
-    }
-    navEl.appendChild(a);
-  });
-
   // Login logic
   let attempts = 0;
   const form     = document.getElementById('login-form');
