@@ -9,7 +9,7 @@ const fs = require('fs');
 // ─── App Setup ────────────────────────────────────────────────────────────────
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const DB_PATH = path.join(__dirname, 'vaultbank.db');
 
 let db; // set in startServer() after sql.js wasm loads
