@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Search — VaultBank</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background:#060c1a; color:#e2e8f0; font-family:'Inter',sans-serif; margin:0; }
+    a { text-decoration:none; }
+    input { outline:none; width:100%; box-sizing:border-box; }
+    input:focus { border-color:#2563eb !important; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation:fadeIn 0.5s ease forwards; }
+    @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .pulse-dot { animation:pulseDot 1.4s infinite; display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:50;border-bottom:1px solid #1a2744;background:rgba(13,21,38,0.95);backdrop-filter:blur(12px);">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:white;">
+      <span style="font-size:1.5rem;">🏦</span><span style="color:#60a5fa;">Vault</span>Bank
+    </a>
+    <div id="nav-links" style="display:flex;align-items:center;gap:4px;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#6b7280;">
+      <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
+      Protected by CyberShield
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<main style="max-width:1152px;margin:0 auto;padding:48px 24px;" class="fade-in">
+
+  <div style="margin-bottom:40px;">
+    <h1 style="font-size:1.875rem;font-weight:700;color:white;margin:0 0 8px;">Transaction Search</h1>
+    <p style="color:#6b7280;font-size:0.875rem;margin:0;">
+      Search across all customer transactions. CyberShield scans every query for malicious payloads.
+    </p>
+  </div>
+
+  <!-- Search box -->
+  <form id="search-form" style="display:flex;gap:12px;margin-bottom:24px;">
+    <input id="search-input" type="text"
+      placeholder='Search transactions (e.g. "salary", "rent", "Amazon")…'
+      style="flex:1;background:#0d1526;border:1px solid #1a2744;color:white;padding:12px 16px;border-radius:12px;font-size:0.875rem;transition:border-color 0.2s;">
+    <button type="submit" id="search-btn"
+      style="padding:12px 24px;background:#2563eb;color:white;font-weight:600;border-radius:12px;border:none;cursor:pointer;font-size:0.875rem;white-space:nowrap;transition:background 0.2s;"
+      onmouseover="this.style.background='#3b82f6'" onmouseout="this.style.background='#2563eb'">
+      🔍 Search
+    </button>
+  </form>
+
+  <!-- Attack demo buttons -->
+  <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;padding:20px;margin-bottom:32px;">
+    <p style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 12px;">
+      🎯 Demo Attack Payloads — click to try
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="payload-btns"></div>
+    <p style="font-size:0.75rem;color:#374151;margin:12px 0 0;">
+      ⚡ Attack payloads are intercepted by CyberShield <em>before</em> reaching this server — if running through the proxy.
+    </p>
+  </div>
+
+  <!-- XSS reflection heading — INTENTIONALLY VULNERABLE: innerHTML injection target -->
+  <div id="results-heading" style="font-size:0.875rem;color:#6b7280;margin-bottom:16px;min-height:20px;"></div>
+
+  <!-- Error box -->
+  <div id="error-box" style="display:none;background:rgba(127,29,29,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:16px;color:#f87171;font-size:0.875rem;margin-bottom:24px;"></div>
+
+  <!-- Results table -->
+  <div id="results-container"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid #1a2744;padding:24px;text-align:center;font-size:0.75rem;color:#4b5563;">
+  © 2025 VaultBank Inc. · All transactions secured by 256-bit TLS · Protected by CyberShield WAF
+</footer>
+
+<script>
+  // Build navbar
+  const NAV = [
+    { href:'/', label:'Home' },
+    { href:'/login', label:'Login' },
+    { href:'/dashboard', label:'Dashboard' },
+    { href:'/transfer', label:'Transfer' },
+    { href:'/search', label:'Transactions' },
+  ];
+  const navEl = document.getElementById('nav-links');
+  NAV.forEach(l => {
+    const a = document.createElement('a');
+    a.href = l.href;
+    a.textContent = l.label;
+    const active = window.location.pathname === l.href;
+    a.style.cssText = `padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:all 0.2s;
+      ${active ? 'background:#2563eb;color:white;' : 'color:#9ca3af;'}`;
+    if (!active) {
+      a.onmouseover = () => { a.style.color='white'; a.style.background='rgba(255,255,255,0.05)'; };
+      a.onmouseout  = () => { a.style.color='#9ca3af'; a.style.background=''; };
+    }
+    navEl.appendChild(a);
+  });
+
+  // Demo payload definitions
+  const PAYLOADS = [
+    { label: 'Normal search',      value: 'salary',                                          desc: 'Returns real DB rows' },
+    { label: 'XSS — script tag',   value: "<script>alert('XSS')<\/script>",                  desc: 'Executes JS via script tag injection' },
+    { label: 'XSS — img onerror',  value: "<img src=x onerror=alert('XSS')>",                desc: 'Executes JS via event handler injection' },
+    { label: 'XSS — SVG',          value: "<svg onload=alert('XSS')>",                        desc: 'Executes JS via SVG onload' },
+    { label: 'SQLi attempt',       value: "' OR 1=1--",                                       desc: 'Would bypass auth (search uses safe parameterized query)' },
+    { label: 'SQLi UNION',         value: "' UNION SELECT * FROM users--",                    desc: 'Attempts to extract users table' },
+  ];
+
+  const payloadContainer = document.getElementById('payload-btns');
+  PAYLOADS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.textContent = p.label;
+    btn.title = p.desc;
+    btn.style.cssText = `font-size:0.75rem;padding:6px 12px;border-radius:8px;border:1px solid #1a2744;
+      background:transparent;color:#9ca3af;cursor:pointer;transition:all 0.2s;`;
+    btn.onmouseover = () => { btn.style.borderColor='#3b82f6'; btn.style.color='white'; };
+    btn.onmouseout  = () => { btn.style.borderColor='#1a2744'; btn.style.color='#9ca3af'; };
+    btn.addEventListener('click', () => {
+      document.getElementById('search-input').value = p.value;
+      doSearch(p.value);
+    });
+    payloadContainer.appendChild(btn);
+  });
+
+  function fmtINR(n) {
+    return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+  }
+
+  // ┌──────────────────────────────────────────────────────────────────────────
+  // │ VULNERABILITY 1 — XSS
+  // │ execScripts() manually creates and appends <script> elements so that
+  // │ <script>alert('XSS')</script> actually executes even though browsers
+  // │ block script tags created via innerHTML. This replicates server-side
+  // │ rendering where the attacker's input is echoed raw into the HTML.
+  // └──────────────────────────────────────────────────────────────────────────
+  function execScripts(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('script').forEach(orig => {
+      const s = document.createElement('script');
+      if (orig.src) {
+        s.src = orig.src;
+      } else {
+        s.text = orig.textContent || orig.innerText || '';
+      }
+      document.body.appendChild(s);
+      s.remove();
+    });
+  }
+
+  async function doSearch(q) {
+    if (!q.trim()) return;
+
+    const headingEl   = document.getElementById('results-heading');
+    const errBox      = document.getElementById('error-box');
+    const resultsEl   = document.getElementById('results-container');
+    const btn         = document.getElementById('search-btn');
+
+    errBox.style.display = 'none';
+    btn.textContent = 'Searching…';
+    btn.disabled = true;
+
+    try {
+      const resp = await fetch('/api/search?q=' + encodeURIComponent(q));
+      const data = await resp.json();
+
+      if (!resp.ok) throw new Error(data.error || 'Search failed');
+
+      const results = data.results || [];
+
+      // ⚠️  INTENTIONALLY VULNERABLE: raw user input injected into DOM via innerHTML
+      // This makes <script>alert()</script> and <img onerror=...> payloads execute.
+      headingEl.innerHTML =
+        results.length + ' result' + (results.length !== 1 ? 's' : '') +
+        ' for: <span style="color:white;">' + q + '</span>';
+
+      // Execute any <script> tags present in the injected payload
+      execScripts(q);
+
+      // Render results table
+      if (results.length === 0) {
+        resultsEl.innerHTML = `
+          <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;padding:40px;text-align:center;color:#4b5563;">
+            No transactions found matching your query.
+          </div>`;
+      } else {
+        const rows = results.map((t, i) => {
+          const isCredit = t.type === 'credit';
+          const bg = i % 2 !== 0 ? 'background:rgba(255,255,255,0.01);' : '';
+          return `<tr style="border-bottom:1px solid #1a2744;${bg}">
+            <td style="padding:14px 20px;color:#6b7280;font-family:monospace;font-size:0.8rem;">#${t.id}</td>
+            <td style="padding:14px 20px;color:#e2e8f0;">${t.description}</td>
+            <td style="padding:14px 20px;color:#60a5fa;">${t.username}</td>
+            <td style="padding:14px 20px;">
+              <span style="padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;
+                ${isCredit ? 'background:rgba(21,128,61,0.3);color:#4ade80;' : 'background:rgba(153,27,27,0.3);color:#f87171;'}">
+                ${t.type}
+              </span>
+            </td>
+            <td style="padding:14px 20px;text-align:right;font-family:monospace;font-weight:600;
+              ${isCredit ? 'color:#4ade80;' : 'color:#f87171;'}">
+              ${isCredit ? '+' : '-'}${fmtINR(t.amount)}
+            </td>
+            <td style="padding:14px 20px;color:#6b7280;">
+              ${new Date(t.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
+            </td>
+          </tr>`;
+        }).join('');
+
+        resultsEl.innerHTML = `
+          <div style="background:#0d1526;border:1px solid #1a2744;border-radius:12px;overflow:hidden;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+              <thead>
+                <tr style="border-bottom:1px solid #1a2744;background:#060c1a;">
+                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">ID</th>
+                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Description</th>
+                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">User</th>
+                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Type</th>
+                  <th style="text-align:right;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Amount</th>
+                  <th style="text-align:left;padding:12px 20px;color:#6b7280;font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;">Date</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
+
+    } catch (err) {
+      errBox.textContent = '⚠️ ' + err.message;
+      errBox.style.display = 'block';
+      headingEl.innerHTML = '';
+      resultsEl.innerHTML = '';
+    }
+
+    btn.textContent = '🔍 Search';
+    btn.disabled = false;
+  }
+
+  // Form submit handler
+  document.getElementById('search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    doSearch(document.getElementById('search-input').value);
+  });
+
+  // Load all transactions on page open
+  doSearch('');
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — VaultBank</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background:#060c1a; color:#e2e8f0; font-family:'Inter',sans-serif; margin:0; }
+    a { text-decoration:none; }
+    input { outline:none; width:100%; box-sizing:border-box; }
+    input:focus { border-color:#2563eb !important; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation:fadeIn 0.5s ease forwards; }
+    @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .pulse-dot { animation:pulseDot 1.4s infinite; display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:50;border-bottom:1px solid #1a2744;background:rgba(13,21,38,0.95);backdrop-filter:blur(12px);">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:white;">
+      <span style="font-size:1.5rem;">🏦</span><span style="color:#60a5fa;">Vault</span>Bank
+    </a>
+    <div id="nav-links" style="display:flex;align-items:center;gap:4px;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#6b7280;">
+      <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
+      Protected by CyberShield
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<main style="min-height:calc(100vh - 128px);display:flex;align-items:center;justify-content:center;padding:32px 24px;">
+  <div style="width:100%;max-width:448px;" class="fade-in">
+
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:3rem;margin-bottom:12px;">🏦</div>
+      <h1 style="font-size:1.875rem;font-weight:700;color:white;margin:0 0 8px;">Sign in to VaultBank</h1>
+      <p style="color:#6b7280;font-size:0.875rem;margin:0;">Enter your credentials to access your account</p>
+    </div>
+
+    <!-- Demo credentials -->
+    <div style="background:rgba(30,58,138,0.2);border:1px solid rgba(59,130,246,0.4);border-radius:12px;padding:16px;margin-bottom:24px;font-size:0.875rem;">
+      <p style="color:#60a5fa;font-weight:600;margin:0 0 8px;">Demo Credentials</p>
+      <div style="color:#9ca3af;line-height:1.8;">
+        <span style="color:#e2e8f0;">admin</span> / <span style="color:#e2e8f0;">password123</span>
+      </div>
+    </div>
+
+    <!-- SQL Injection hint -->
+    <div style="background:rgba(120,53,15,0.2);border:1px solid rgba(217,119,6,0.4);border-radius:12px;padding:16px;margin-bottom:24px;font-size:0.875rem;">
+      <p style="color:#fbbf24;font-weight:600;margin:0 0 8px;">⚡ SQL Injection Demo</p>
+      <div style="color:#9ca3af;line-height:1.8;font-family:monospace;font-size:0.8rem;">
+        Username: <span style="color:#fcd34d;">' OR 1=1--</span><br>
+        Password: <span style="color:#fcd34d;">(anything)</span>
+      </div>
+      <p style="color:#78716c;font-size:0.75rem;margin:8px 0 0;">Bypasses authentication entirely via string concatenation vulnerability</p>
+    </div>
+
+    <!-- Login form -->
+    <form id="login-form" style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:32px;">
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.875rem;color:#9ca3af;margin-bottom:8px;">Username</label>
+        <input id="username" type="text" placeholder="admin" required
+          style="background:#060c1a;border:1px solid #1a2744;color:white;padding:12px 16px;border-radius:12px;font-size:0.875rem;transition:border-color 0.2s;"
+        >
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.875rem;color:#9ca3af;margin-bottom:8px;">Password</label>
+        <input id="password" type="password" placeholder="••••••••" required
+          style="background:#060c1a;border:1px solid #1a2744;color:white;padding:12px 16px;border-radius:12px;font-size:0.875rem;transition:border-color 0.2s;"
+        >
+      </div>
+
+      <!-- Error message -->
+      <div id="error-box" style="display:none;background:rgba(127,29,29,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:12px;font-size:0.875rem;color:#f87171;margin-bottom:16px;">
+        <span id="error-text"></span>
+        <span id="attempt-warn" style="display:none;font-weight:600;color:#ef4444;display:block;margin-top:4px;"></span>
+      </div>
+
+      <button id="submit-btn" type="submit"
+        style="width:100%;padding:12px;background:#2563eb;color:white;font-weight:600;border-radius:12px;border:none;cursor:pointer;font-size:0.95rem;transition:background 0.2s;"
+        onmouseover="this.style.background='#3b82f6'" onmouseout="this.style.background='#2563eb'">
+        Sign In
+      </button>
+    </form>
+
+    <p style="text-align:center;font-size:0.75rem;color:#374151;margin-top:16px;">
+      🛡️ CyberShield monitors login attempts · IP blocked after 3 failures
+    </p>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid #1a2744;padding:24px;text-align:center;font-size:0.75rem;color:#4b5563;">
+  © 2025 VaultBank Inc. · All transactions secured by 256-bit TLS · Protected by CyberShield WAF
+</footer>
+
+<script>
+  // Build navbar
+  const NAV = [
+    { href:'/', label:'Home' },
+    { href:'/login', label:'Login' },
+    { href:'/dashboard', label:'Dashboard' },
+    { href:'/transfer', label:'Transfer' },
+    { href:'/search', label:'Transactions' },
+  ];
+  const navEl = document.getElementById('nav-links');
+  NAV.forEach(l => {
+    const a = document.createElement('a');
+    a.href = l.href;
+    a.textContent = l.label;
+    const active = window.location.pathname === l.href;
+    a.style.cssText = `padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:all 0.2s;
+      ${active ? 'background:#2563eb;color:white;' : 'color:#9ca3af;'}`;
+    if (!active) {
+      a.onmouseover = () => { a.style.color='white'; a.style.background='rgba(255,255,255,0.05)'; };
+      a.onmouseout  = () => { a.style.color='#9ca3af'; a.style.background=''; };
+    }
+    navEl.appendChild(a);
+  });
+
+  // Login logic
+  let attempts = 0;
+  const form     = document.getElementById('login-form');
+  const errBox   = document.getElementById('error-box');
+  const errText  = document.getElementById('error-text');
+  const warnText = document.getElementById('attempt-warn');
+  const btn      = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    errBox.style.display = 'none';
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const resp = await fetch('/api/login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username, password }),
+      });
+      const data = await resp.json();
+
+      if (data.success) {
+        // Store user in sessionStorage and redirect to dashboard
+        sessionStorage.setItem('vaultbank_user', JSON.stringify(data.user));
+        window.location.href = '/dashboard';
+      } else {
+        attempts++;
+        errText.textContent = '⚠️ ' + (data.error || 'Login failed.');
+        if (attempts >= 2) {
+          warnText.style.display = 'block';
+          warnText.textContent = `Warning: ${attempts} failed attempt${attempts > 1 ? 's' : ''}. CyberShield will block after 3.`;
+        }
+        errBox.style.display = 'block';
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      errText.textContent = '⚠️ Network error — could not reach the server.';
+      errBox.style.display = 'block';
+      btn.textContent = 'Sign In';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

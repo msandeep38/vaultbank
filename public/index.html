@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaultBank — Secure Online Banking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background:#060c1a; color:#e2e8f0; font-family:'Inter',sans-serif; margin:0; }
+    a { text-decoration:none; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation:fadeIn 0.5s ease forwards; }
+    @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .pulse-dot { animation:pulseDot 1.4s infinite; display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:50;border-bottom:1px solid #1a2744;background:rgba(13,21,38,0.95);backdrop-filter:blur(12px);">
+  <div style="max-width:1152px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:white;">
+      <span style="font-size:1.5rem;">🏦</span>
+      <span style="color:#60a5fa;">Vault</span>Bank
+    </a>
+    <div id="nav-links" style="display:flex;align-items:center;gap:4px;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#6b7280;">
+      <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
+      Protected by CyberShield
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main>
+<div style="max-width:1152px;margin:0 auto;padding:64px 24px;" class="fade-in">
+
+  <!-- Badge -->
+  <div style="text-align:center;margin-bottom:80px;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(30,58,138,0.3);border:1px solid rgba(59,130,246,0.4);color:#60a5fa;font-size:0.75rem;padding:6px 16px;border-radius:9999px;margin-bottom:24px;">
+      <span class="pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span>
+      CyberShield WAF Active · All requests monitored
+    </div>
+
+    <h1 style="font-size:clamp(2.5rem,6vw,3.75rem);font-weight:800;color:white;margin:0 0 24px;line-height:1.1;">
+      Banking That Puts<br>
+      <span style="background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+        Security First
+      </span>
+    </h1>
+
+    <p style="color:#9ca3af;font-size:1.125rem;max-width:640px;margin:0 auto 40px;line-height:1.7;">
+      VaultBank combines cutting-edge financial tools with enterprise-grade security.
+      Every request is scanned by our AI-powered WAF before it reaches your account.
+    </p>
+
+    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+      <a href="/login" style="padding:12px 32px;background:#2563eb;color:white;font-weight:600;border-radius:12px;font-size:0.95rem;transition:background 0.2s;"
+         onmouseover="this.style.background='#3b82f6'" onmouseout="this.style.background='#2563eb'">
+        Sign In to Your Account
+      </a>
+      <a href="/search" style="padding:12px 32px;border:1px solid #1a2744;color:#d1d5db;font-weight:600;border-radius:12px;font-size:0.95rem;transition:all 0.2s;"
+         onmouseover="this.style.borderColor='#3b82f6';this.style.color='white'" onmouseout="this.style.borderColor='#1a2744';this.style.color='#d1d5db'">
+        View Transactions
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:80px;">
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:1.875rem;font-weight:800;color:#60a5fa;margin-bottom:4px;">2.4M+</div>
+      <div style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;">Active Customers</div>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:1.875rem;font-weight:800;color:#60a5fa;margin-bottom:4px;">₹180M+</div>
+      <div style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;">Daily Transactions</div>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:1.875rem;font-weight:800;color:#60a5fa;margin-bottom:4px;">42</div>
+      <div style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;">Countries Served</div>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:1.875rem;font-weight:800;color:#60a5fa;margin-bottom:4px;">99.99%</div>
+      <div style="font-size:0.7rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;">Uptime SLA</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <h2 style="font-size:1.5rem;font-weight:700;color:white;text-align:center;margin-bottom:40px;">
+    Why 2.4 Million Customers Trust VaultBank
+  </h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-bottom:80px;">
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">🔐</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">Military-Grade Encryption</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">All data encrypted at rest and in transit using AES-256 and TLS 1.3.</p>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">🛡️</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">WAF Protection</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">Real-time Web Application Firewall blocks XSS, SQL injection, and DoS attacks.</p>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">⚡</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">Instant Transfers</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">Send and receive money globally in seconds with zero hidden fees.</p>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">📊</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">Smart Analytics</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">AI-powered spending insights and fraud detection on every transaction.</p>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">🌐</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">Global Coverage</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">Banking in 42 countries with multi-currency accounts and local IBANs.</p>
+    </div>
+    <div style="background:#0d1526;border:1px solid #1a2744;border-radius:16px;padding:24px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'" onmouseout="this.style.borderColor='#1a2744'">
+      <div style="font-size:2rem;margin-bottom:12px;">🤝</div>
+      <h3 style="font-weight:600;color:white;margin:0 0 8px;">24/7 Support</h3>
+      <p style="color:#6b7280;font-size:0.875rem;line-height:1.6;margin:0;">Live agents available around the clock via chat, phone, or video.</p>
+    </div>
+  </div>
+
+  <!-- CyberShield banner -->
+  <div style="background:linear-gradient(135deg,rgba(30,58,138,0.2),rgba(14,116,144,0.1));border:1px solid rgba(59,130,246,0.3);border-radius:16px;padding:32px;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">🛡️</div>
+    <h3 style="font-size:1.25rem;font-weight:700;color:white;margin:0 0 8px;">Protected by CyberShield WAF</h3>
+    <p style="color:#9ca3af;font-size:0.875rem;max-width:512px;margin:0 auto;line-height:1.6;">
+      Every request to VaultBank passes through the CyberShield Web Application Firewall, which
+      detects and blocks XSS, SQL Injection, Brute Force, DoS, and Port Scan attacks in real time.
+    </p>
+  </div>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid #1a2744;padding:24px;text-align:center;font-size:0.75rem;color:#4b5563;">
+  © 2025 VaultBank Inc. · All transactions secured by 256-bit TLS · Protected by CyberShield WAF
+</footer>
+
+<script>
+  // Build navbar dynamically so active state is always correct
+  const NAV = [
+    { href:'/', label:'Home' },
+    { href:'/login', label:'Login' },
+    { href:'/dashboard', label:'Dashboard' },
+    { href:'/transfer', label:'Transfer' },
+    { href:'/search', label:'Transactions' },
+  ];
+  const navEl = document.getElementById('nav-links');
+  NAV.forEach(l => {
+    const a = document.createElement('a');
+    a.href = l.href;
+    a.textContent = l.label;
+    const active = window.location.pathname === l.href;
+    a.style.cssText = `padding:8px 16px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:all 0.2s;
+      ${active ? 'background:#2563eb;color:white;' : 'color:#9ca3af;'}`;
+    if (!active) {
+      a.onmouseover = () => { a.style.color='white'; a.style.background='rgba(255,255,255,0.05)'; };
+      a.onmouseout  = () => { a.style.color='#9ca3af'; a.style.background=''; };
+    }
+    navEl.appendChild(a);
+  });
+</script>
+</body>
+</html>
