@@ -153,18 +153,11 @@
 </footer>
 
 <script>
-/* =============================================================
-   PAYLOAD LOOKUP TABLE — indexed by data-idx on each button.
-   Stored here as JS values; the HTML buttons use entities so
-   none of these strings appear raw in the HTML source.
-   The closing script tag inside string 0 is escaped as <\/
-   so the HTML parser never sees </script and closes this block.
-============================================================= */
 var ATTACK_PAYLOADS = [
-  "<script>alert('XSS')<\/script>",
+  "\x3cscript\x3ealert('XSS')\x3c/script\x3e",
   "' OR '1'='1",
-  "<img src=x onerror=alert('hacked')>",
-  "<svg onload=alert(1)>"
+  "\x3cimg src=x onerror=alert('hacked')\x3e",
+  "\x3csvg onload=alert(1)\x3e"
 ];
 
 /* Wire up each hardcoded attack button */
